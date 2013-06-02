@@ -4,6 +4,7 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.WordUtils;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -21,9 +22,9 @@ public class TemplateUtil {
     private static final String NODE_TEMPLATE = "ru/ifmo/sta/lab04/baev/node.ftl";
     private static final String RULE_NODE_TEMPLATE = "ru/ifmo/sta/lab04/baev/rule-node.ftl";
     private static final String ANNOTATION = "ru/ifmo/sta/lab04/baev/annotation.txt";
-    private static final String PARSER_TEMPLATE = "ru/ifmo/sta/lab04/baev/parser.txt";
-    private static final String PARSER_METHOD_TEMPLATE = "ru/ifmo/sta/lab04/baev/parser-method.txt";
-    private static final String PARSER_METHOD_CASE_TEMPLATE = "ru/ifmo/sta/lab04/baev/parser-method-case.txt";
+    private static final String PARSER_TEMPLATE = "ru/ifmo/sta/lab04/baev/parser.ftl";
+    private static final String PARSER_METHOD_TEMPLATE = "ru/ifmo/sta/lab04/baev/parser-method.ftl";
+    private static final String PARSER_METHOD_CASE_TEMPLATE = "ru/ifmo/sta/lab04/baev/parser-method-case.ftl";
 
     private File output;
     private String packageName;
@@ -50,6 +51,18 @@ public class TemplateUtil {
         this.terminals = terminals;
         this.notTerminals = notTerminals;
         this.first = new HashMap<String, List<String>>();
+        first.put("A", Arrays.asList("PLUS", "OPERAND"));
+        this.rules = new HashMap<String, List<Rule>>();
+
+        rules.put("A", Arrays.asList(
+                new Rule("A", Arrays.asList("PLUS", "A", "A"),
+                        new HashSet<String>(Arrays.asList("PLUS"))
+                ),
+                new Rule("A", Arrays.asList("OPERAND"),
+                        new HashSet<String>(Arrays.asList("OPERAND"))
+                )
+        ));
+
         this.firstTerminal = "A";
     }
 
@@ -125,10 +138,9 @@ public class TemplateUtil {
         return templateToString(PARSER_METHOD_TEMPLATE, map);
     }
 
-    private String createParserMethodCase(String NotTerminal, String currentToken) throws IOException {
+    private String createParserMethodCase(String notTerminal, String currentToken) throws IOException, TemplateException {
         Rule currentRule = null;
-
-        for (Rule rule : rules.get(NotTerminal)) {
+        for (Rule rule : rules.get(notTerminal)) {
             if (rule.containsInFirst(currentToken)) {
                 currentRule = rule;
                 break;
@@ -139,16 +151,45 @@ public class TemplateUtil {
             throw new IOException("if u see this error - something wrong with grammar =(");
         }
 
+        List<String> lines = new ArrayList<String>();
+        List<String> createdVars = new ArrayList<String>();
         int index = 0;
         for (String token : currentRule.getTokens()) {
             if (notTerminals.contains(token)) {
-
+                lines.add(getLine1(token, index));
             } else {
-
+                lines.add(getLine2(token, index));
             }
+
+            createdVars.add(token + index);
             index++;
         }
-        return "";
+
+        Map<String, Object> map = createMap();
+        map.put("token", currentToken);
+        map.put("lines", lines);
+        map.put("name", notTerminal);
+        map.put("created_vars", createdVars);
+
+        return templateToString(PARSER_METHOD_CASE_TEMPLATE, map);
+    }
+
+    private String getLine1(String token, int index) {
+        return WordUtils.capitalize(token)
+                + "RuleNode "
+                + token
+                + index
+                + " = "
+                + WordUtils.capitalize(token)
+                + "(lexicalAnalyzer);";
+    }
+
+    private String getLine2(String token, int index) {
+        return "Node "
+                + token
+                + index
+                + " = new "
+                + "Node(lexicalAnalyzer.getCurrentSubstring());";
     }
 
     private void processTemplate(String templatePath, Map<String, Object> map, String fileName)

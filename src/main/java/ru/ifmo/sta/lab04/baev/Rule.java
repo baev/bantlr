@@ -19,6 +19,14 @@ public class Rule {
         this.first = new HashSet<String>();
     }
 
+    public Rule(String from, List<String> tokens, Set<String> first) {
+        this.from = from;
+        this.tokens = tokens;
+        this.first = first;
+    }
+
+
+
     public String getFrom() {
         return from;
     }
