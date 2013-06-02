@@ -8,10 +8,10 @@ import org.apache.commons.io.IOUtils;
 import java.io.*;
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Dmitry Baev charlie@yandex-team.ru
@@ -24,18 +24,21 @@ public class TemplateUtil {
     private static final String NODE_TEMPLATE_FILE_PATH = "ru/ifmo/sta/lab04/baev/node.ftl";
     private static final String RULE_NODE_TEMPLATE_FILE_PATH = "ru/ifmo/sta/lab04/baev/rule-node.ftl";
     private static final String ANNOTATION_FILE_PATH = "ru/ifmo/sta/lab04/baev/annotation.txt";
+    private static final String PARSER_FILE_PATH = "ru/ifmo/sta/lab04/baev/parser.txt";
+    private static final String PARSER_METHOD_FILE_PATH = "ru/ifmo/sta/lab04/baev/parser-method.txt";
+    private static final String PARSER_METHOD_CASE_FILE_PATH = "ru/ifmo/sta/lab04/baev/parser-method-case.txt";
 
     private File output;
     private String packageName;
 
     private List<String> tokens;
     private List<String> terminals;
-    private List<String> notTerminals;
+    private Set<String> notTerminals;
 
     public TemplateUtil(String packageName,
                         List<String> tokens,
                         List<String> terminals,
-                        List<String> notTerminals
+                        Set<String> notTerminals
                         ) {
         this.output = new File("bantlr/"
                 + packageName.replaceAll("/.", "/"));
@@ -90,6 +93,12 @@ public class TemplateUtil {
         }
     }
 
+    public void writeParser() throws IOException {
+        Map<String, Object> map = createMap();
+
+
+    }
+
     private void processTemplate(String templatePath, Map<String, Object> map, String fileName)
             throws IOException, TemplateException {
         String name = new BigInteger(130, new SecureRandom()).toString(32);
@@ -100,6 +109,20 @@ public class TemplateUtil {
         if (output.exists() || output.mkdirs()) {
             template.process(map, new PrintWriter(new File(output, fileName)));
         }
+    }
+
+    private String templateToString(String templatePath, Map<String, Object> map, String fileName) throws IOException, TemplateException {
+        String name = new BigInteger(130, new SecureRandom()).toString(32);
+
+        InputStream is = ClassLoader.getSystemResourceAsStream(templatePath);
+        Template template = new Template(name, new InputStreamReader(is), new Configuration());
+
+        StringWriter result = new StringWriter();
+        if (output.exists() || output.mkdirs()) {
+            template.process(map, result);
+        }
+
+        return result.toString();
     }
 
 }

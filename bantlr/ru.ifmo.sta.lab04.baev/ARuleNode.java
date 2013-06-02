@@ -12,6 +12,10 @@ import java.util.List;
 public class ARuleNode extends Node {
     private int Attribute;
 
+    public ARuleNode(String name) {
+        super(name);
+    }
+
     public ARuleNode(String name, List<Node> children) {
         super(name, children);
     }

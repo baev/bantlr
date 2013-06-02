@@ -1,5 +1,6 @@
 package ru.ifmo.sta.lab04.baev;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,6 +13,11 @@ import java.util.List;
 public class Node {
     private String name;
     private List<Node> children;
+
+    public Node(String name) {
+        this.name = name;
+        this.children = new ArrayList<Node>();
+    }
 
     public Node(String name, List<Node> children) {
         this.name = name;

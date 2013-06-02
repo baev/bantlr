@@ -7,6 +7,10 @@ ${annotation}
 public class ${name}RuleNode extends Node {
     private ${attr_type} ${attr_name};
 
+    public ${name}RuleNode(String name) {
+        super(name);
+    }
+
     public ${name}RuleNode(String name, List<Node> children) {
         super(name, children);
     }
