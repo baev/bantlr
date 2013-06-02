@@ -10,7 +10,7 @@ private static ${name}RuleNode ${name}(LexicalAnalyzer lexicalAnalyzer) throws P
         </#list>
 
         default:
-        throw new ParseException("Expected ${first_to_string}, but has "
+        throw new ParseException("Expected ${first_set?upper_case}, but has "
         + lexicalAnalyzer.getCurrentToken(), lexicalAnalyzer.getPosition());
 
     }
