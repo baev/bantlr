@@ -10,7 +10,7 @@ import java.util.List;
 */
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class ARuleNode extends Node {
-    private int Attribute;
+    private int attribute;
 
     public ARuleNode(String name) {
         super(name);
@@ -21,10 +21,10 @@ public class ARuleNode extends Node {
     }
 
     public int getAttribute() {
-        return Attribute;
+        return attribute;
     }
 
-    public void setAttribute(int Attribute) {
-        this.Attribute = Attribute;
+    public void setAttribute(int attribute) {
+        this.attribute = attribute;
     }
 }
