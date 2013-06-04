@@ -35,10 +35,6 @@
                             <directory>bantlr</directory>
                             <followSymlinks>false</followSymlinks>
                         </fileset>
-                        <fileset>
-                            <directory>antlr4</directory>
-                            <followSymlinks>false</followSymlinks>
-                        </fileset>
                     </filesets>
                 </configuration>
             </plugin>
@@ -62,33 +58,10 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <groupId>org.antlr</groupId>
-                <artifactId>antlr4-maven-plugin</artifactId>
-                <version>4.0</version>
-                <configuration>
-                    <outputDirectory>antlr4</outputDirectory>
-                    <sourceDirectory>src/main/resources</sourceDirectory>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>antlr4</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
         </plugins>
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4</artifactId>
-            <version>4.0</version>
-        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

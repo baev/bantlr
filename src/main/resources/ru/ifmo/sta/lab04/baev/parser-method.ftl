@@ -1,4 +1,4 @@
-private static ${name}RuleNode ${name}(LexicalAnalyzer lexicalAnalyzer) throws ParseException {
+private static ${name?cap_first}RuleNode ${name}(LexicalAnalyzer lexicalAnalyzer) throws ParseException {
     Token curToken = lexicalAnalyzer.getCurrentToken();
 
     switch (curToken) {

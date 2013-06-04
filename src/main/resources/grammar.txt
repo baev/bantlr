@@ -1,0 +1,16 @@
+s<public int val;>
+a<int val;>
+#
+
+s: a {s.val = a0.val}
+s: EPS {}
+a: PLUS a a {a.val = a1.val + a2.val}
+a: MINUS a a {a.val = a1.val - a2.val}
+a: MULTIPLICATION a a {a.val = a1.val * a2.val}
+a: NUMBER {a.val = toInteger(NUMBER0.getName())}
+
+NUMBER: <[0-9]+>
+PLUS: <\\+>
+MINUS: <->
+MULTIPLICATION: <\\*>
+EPS: <>

@@ -30,16 +30,17 @@ public class TemplateUtil {
     private String packageName;
 
     private List<String> tokens;
-    private List<String> terminals;
+    private List<String> regexps;
     private Set<String> notTerminals;
-    private String firstTerminal;
+    private String firstNotTerminal;
 
-    private Map<String, List<String>> first;
+    private Map<String, Set<String>> first;
     private Map<String, List<Rule>> rules;
+    private Map<String, String> initCodes;
 
     public TemplateUtil(String packageName,
                         List<String> tokens,
-                        List<String> terminals,
+                        List<String> regexps,
                         Set<String> notTerminals
     ) {
         this.output = new File("bantlr/"
@@ -48,10 +49,10 @@ public class TemplateUtil {
         this.packageName = packageName;
 
         this.tokens = tokens;
-        this.terminals = terminals;
+        this.regexps = regexps;
         this.notTerminals = notTerminals;
-        this.first = new HashMap<String, List<String>>();
-        first.put("A", Arrays.asList("PLUS", "OPERAND"));
+        this.first = new HashMap<String, Set<String>>();
+        first.put("A", new HashSet<String>(Arrays.asList("PLUS", "OPERAND")));
         this.rules = new HashMap<String, List<Rule>>();
 
         rules.put("A", Arrays.asList(
@@ -63,7 +64,49 @@ public class TemplateUtil {
                 )
         ));
 
-        this.firstTerminal = "A";
+        this.firstNotTerminal = "A";
+    }
+
+    public TemplateUtil(String packageName,
+                        String firstNotTerminal,
+                        Map<String, String> regexps,
+                        Set<String> notTerminals,
+                        Map<String, String> initCodes,
+                        Map<String, List<Rule>> ruleCodes,
+                        Map<String, Set<String>> first) {
+        this.output = new File("bantlr/"
+                + packageName.replaceAll("/.", "/"));
+
+        this.packageName = packageName;
+        this.firstNotTerminal = firstNotTerminal;
+
+        this.tokens = new ArrayList<String>();
+        this.regexps = new ArrayList<String>();
+
+        List<String> tmp1 = new ArrayList<String>();
+        List<String> tmp2 = new ArrayList<String>();
+
+        for (String s : regexps.keySet()) {
+            if (regexps.get(s).isEmpty()) {
+                tmp1.add(s);
+                tmp2.add(regexps.get(s));
+                continue;
+            }
+            this.tokens.add(s);
+            this.regexps.add(regexps.get(s));
+        }
+
+        for (int i = 0; i < tmp1.size(); i++) {
+            this.tokens.add(tmp1.get(i));
+            this.regexps.add(tmp2.get(i));
+        }
+
+        tokens.add("END");
+
+        this.rules = ruleCodes;
+        this.notTerminals = notTerminals;
+        this.initCodes = initCodes;
+        this.first = first;
     }
 
     private Map<String, Object> createMap() throws IOException {
@@ -85,7 +128,7 @@ public class TemplateUtil {
     public void writeLexer() throws IOException, TemplateException {
         Map<String, Object> map = createMap();
         map.put("tokens", tokens);
-        map.put("term", terminals);
+        map.put("term", regexps);
 
         processTemplate(LEXER_TEMPLATE, map, "LexicalAnalyzer.java");
     }
@@ -102,10 +145,9 @@ public class TemplateUtil {
         for (String notTermerminal : notTerminals) {
             Map<String, Object> map = createMap();
             map.put("name", notTermerminal);
-            map.put("attr_name", "Attribute");
-            map.put("attr_type", "int");
+            map.put("init_attr", initCodes.get(notTermerminal));
 
-            processTemplate(RULE_NODE_TEMPLATE, map, notTermerminal + "RuleNode.java");
+            processTemplate(RULE_NODE_TEMPLATE, map, WordUtils.capitalize(notTermerminal) + "RuleNode.java");
         }
     }
 
@@ -117,7 +159,7 @@ public class TemplateUtil {
         }
 
         Map<String, Object> map = createMap();
-        map.put("first_rule_name", firstTerminal);
+        map.put("first_rule_name", firstNotTerminal);
         map.put("methods", methods);
 
         processTemplate(PARSER_TEMPLATE, map, "Parser.java");
@@ -170,6 +212,7 @@ public class TemplateUtil {
         map.put("lines", lines);
         map.put("name", notTerminal);
         map.put("created_vars", createdVars);
+        map.put("code", currentRule.getCode());
 
         return templateToString(PARSER_METHOD_CASE_TEMPLATE, map);
     }
@@ -180,7 +223,7 @@ public class TemplateUtil {
                 + token
                 + index
                 + " = "
-                + WordUtils.capitalize(token)
+                + token
                 + "(lexicalAnalyzer);";
     }
 

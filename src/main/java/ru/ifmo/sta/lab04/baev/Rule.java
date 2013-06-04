@@ -12,6 +12,7 @@ public class Rule {
     private String from;
     private List<String> tokens;
     private Set<String> first;
+    private String code;
 
     public Rule(String from, List<String> tokens) {
         this.from = from;
@@ -25,8 +26,6 @@ public class Rule {
         this.first = first;
     }
 
-
-
     public String getFrom() {
         return from;
     }
@@ -35,7 +34,27 @@ public class Rule {
         return tokens;
     }
 
+    public String getCode() {
+        return code;
+    }
+
+    public void setFirst(Set<String> first) {
+        this.first = first;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
     public boolean containsInFirst(String terminal) {
         return first.contains(terminal);
+    }
+
+    @Override
+    public String toString() {
+        return "Rule{" +
+                "tokens=" + tokens +
+                ", from='" + from + '\'' +
+                '}';
     }
 }

@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 ${annotation}
 public class Parser {
-    public static Node parse(InputStream is) throws ParseException {
+    public static ${first_rule_name?cap_first}RuleNode parse(InputStream is) throws ParseException {
         LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(is);
 
         lexicalAnalyzer.nextToken();
@@ -17,4 +17,9 @@ public class Parser {
 
     </#if>
     </#list>
+
+
+    public static int toInteger(String s) {
+        return Integer.parseInt(s);
+    }
 }

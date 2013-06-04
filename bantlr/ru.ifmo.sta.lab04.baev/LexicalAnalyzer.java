@@ -25,12 +25,18 @@ public class LexicalAnalyzer {
     private String currentSubstring;
 
     private static final String[] term = new String[]{
+        "\\*",
         "\\+",
-        "[0-9]+"
+        "-",
+        "[0-9]+",
+        ""
     };
     private static final Token[] tokens = new Token[]{
+        Token.MULTIPLICATION,
         Token.PLUS,
-        Token.OPERAND,
+        Token.MINUS,
+        Token.NUMBER,
+        Token.EPS,
         Token.END
     };
 
